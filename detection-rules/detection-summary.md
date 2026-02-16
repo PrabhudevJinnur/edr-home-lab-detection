@@ -2,36 +2,64 @@
 
 ## Overview
 
-This document summarizes how alerts were generated during the SOAR & EDR lab.
+This document summarizes the custom detection and response rule created during the SOAR & EDR lab.
 
-No custom detection rules were created. The lab relied on default detection logic within the EDR platform.
+Unlike relying solely on default detection logic, a custom detection rule was configured to identify specific adversary behavior simulated on the monitored endpoint.
 
 ---
 
-## Detection Behavior Observed
+## Custom Detection Rule
 
-During simulated attack activity, the EDR platform generated alerts based on:
+A detection rule was created to monitor for execution of a credential dumping tool (LaZagne).
 
-- Suspicious process execution
-- Behavioral anomalies
-- Known attack technique patterns
+The rule was configured to trigger when:
 
-The alerts were automatically triggered by built-in detection capabilities.
+- The executable name matched `LaZagne.exe`
+- Suspicious command-line arguments were observed
+- Execution occurred from a user download directory
+- File was unsigned or untrusted
+
+---
+
+## Response Logic
+
+Upon detection, the system:
+
+- Generated a high-severity alert
+- Sent structured alert details including:
+  - Time
+  - Computer name
+  - Source IP
+  - Process name
+  - Command line
+  - File path
+  - File hash
+- Routed notification through Slack and Email
+- Prompted the user for endpoint isolation decision
+
+If isolation was confirmed:
+- The endpoint was isolated via response action.
+
+If isolation was declined:
+- A notification message was sent indicating the system was not isolated.
 
 ---
 
 ## What Was Validated
 
-- Endpoint telemetry was successfully collected.
-- Detection logic identified suspicious activity.
-- Alerts were generated in real time.
-- Investigation workflow could be initiated from the alert.
+- Custom detection logic successfully triggered on simulated credential dumping activity.
+- Alert metadata contained sufficient forensic context for investigation.
+- Response workflow executed as expected.
+- Endpoint isolation functionality operated correctly.
 
 ---
 
 ## Key Learning
 
-This lab demonstrated how pre-configured detection logic within an EDR platform can identify potentially malicious activity without requiring custom rule development.
+This lab demonstrated how custom detection engineering can improve visibility beyond default EDR alerts.
 
-It reinforced the importance of understanding how default detection mechanisms operate before attempting rule customization.
+It reinforced the importance of:
 
+- Defining detection conditions carefully
+- Validating alert fidelity
+- Integrating detection logic with automated response workflows
